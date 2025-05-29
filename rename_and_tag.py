@@ -25,8 +25,8 @@ def run_script_in_venv(venv_dir, audio_path, toc_path, rename_files):
     )
 
     # Escape paths and values
-    audio_path = audio_path.replace("\\", "\\\\")
-    toc_path = toc_path.replace("\\", "\\\\")
+    AUDIO_PATH   = audio_path.replace("\\", "\\\\")
+    TOC_PATH     = toc_path.replace("\\", "\\\\")
     rename_files = str(rename_files)
 
     script_code = f'''
@@ -36,18 +36,18 @@ from pathlib import Path
 from mutagen.easyid3 import EasyID3
 import mutagen
 
-AUDIO_PATH   = r"{audio_path}"
-CH_TEXT_PATH = r"{toc_path}"
+AUDIO_PATH   = r"{AUDIO_PATH}"
+TOC_PATH     = r"{TOC_PATH}"
 RENAME_FILES = {rename_files}
 
 def rename_file_names():
     """
-    Renames MP3 files in AUDIO_PATH based on chapter titles from CH_TEXT_PATH.
+    Renames MP3 files in AUDIO_PATH based on chapter titles from TOC_PATH.
     """
     folder    = Path(AUDIO_PATH)
     mp3_files = sorted(folder.glob("*.mp3"))
 
-    with open(CH_TEXT_PATH, "r", encoding="utf-8") as infile:
+    with open(TOC_PATH, "r", encoding="utf-8") as infile:
         toc = [f.strip() for f in infile.readlines()]
 
     toc = [f"{{i:03d}} {{fname}}" for i, fname in enumerate(toc, start=1)]
@@ -121,7 +121,7 @@ def main():
     Cleans up the environment when finished.
     """
     parser = argparse.ArgumentParser(description="Rename MP3 files and/or update metadata titles in a virtual environment.")
-    parser.add_argument("--audio_path",     required=True,       help="Path to folder containing MP3 files.")
+    parser.add_argument("--audio_path",   required=True,       help="Path to folder containing MP3 files.")
     parser.add_argument("--toc_path",     required=False,      help="Path to the text file with chapter titles (required if --rename_files is used).")
     parser.add_argument("--rename_files", action="store_true", help="Rename MP3 filenames using chapter titles from the TOC file.")
     args = parser.parse_args()
